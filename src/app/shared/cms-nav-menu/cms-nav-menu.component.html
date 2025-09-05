@@ -1,0 +1,22 @@
+<div class=" h-screen w-64 bg-gray-200 text-black flex flex-col z-50">
+  <div class="p-4 text-xl font-bold border-b border-gray-700 flex items-center">
+    <img src="assets/images/ssacs-logo.png"
+         alt="SSACS Logo"
+         class="w-[50px] h-[50px] object-cover mr-4" />
+    <span>SSACS</span>
+  </div>
+  <nav class="flex-1 p-4 space-y-4 overflow-y-auto">
+    <a routerLink="/location-master" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Location Master</a>
+    <a routerLink="/home-banner-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Home Master</a>
+    <a routerLink="/facts-myths-banner-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Facts & Myths Master</a>
+    <a routerLink="/quiz-config-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Quiz Config Master</a>
+    <a routerLink="/take-quiz-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Take Quiz Master</a>
+    <a routerLink="/our-updates-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Our Updates Master</a>
+    <a routerLink="/faq-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">FAQ's Master</a>
+    <a routerLink="/business-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Business Master</a>
+    <a routerLink="/coupon-cms" routerLinkActive="bg-gray-700 text-white" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">Coupon Master</a>
+  </nav>
+  <div class="p-4 border-t border-gray-700">
+    <a (click)="logout()" routerLink="/" class="block px-4 py-2 rounded hover:bg-gray-700 hover:text-white">LogOut</a>
+  </div>
+</div>

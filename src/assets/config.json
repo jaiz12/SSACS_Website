@@ -1,0 +1,8 @@
+{
+  "apiUrl": "https://ssacs-api.argiasolutions.website/api",
+  "imageApiUrl": "https://ssacs-api.argiasolutions.website/",
+  "websiteUrl": "http://localhost:4200/",
+  "wsPort": 3000,
+  "wsPath": "/",
+  "wsProtocol": "ws"
+}

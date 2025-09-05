@@ -1,0 +1,19 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.overlay-container{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+
+/* Remove default ngx-toastr styling */
+/*.toast-container,
+.toast {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}*/
