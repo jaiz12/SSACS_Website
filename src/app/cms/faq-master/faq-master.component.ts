@@ -166,7 +166,7 @@ export class FaqMasterComponent implements OnInit {
   deleteItem(item: any) {
     Swal.fire({
       title: 'Are you sure?',
-      text: `You won\'t to Delete this row ${item.title}!`,
+      text: `You won\'t to Delete this row "${item.title}" !`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, Delete!',

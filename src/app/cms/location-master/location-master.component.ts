@@ -132,7 +132,7 @@ export class LocationMasterComponent implements OnInit {
   deleteItem(item: any) {
     Swal.fire({
       title: 'Are you sure?',
-      text: `You won\'t to Delete this row ${item.loc_name}!`,
+      text: `You won\'t to Delete this row "${item.loc_name}" !`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Yes, Delete!',

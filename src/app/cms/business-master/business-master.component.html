@@ -33,7 +33,7 @@
         <tbody>
           <tr *ngFor="let item of details | searchFilter: searchTerm | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage } ; let i = index" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
             <td class="px-6 py-4"> {{i + 1}}</td>
-            <td class="px-6 py-4">{{ item.loc_id }}</td>
+            <td class="px-6 py-4">{{ item.loc_name }}</td>
             <td class="px-6 py-4">{{ item.bm_name }}</td>
             <td class="px-6 py-4">{{ item.address.split(' ').slice(0, 15).join(' ') }}{{ item.address.split(' ').length > 15 ? '...' : ''  }}</td>
             <td class="px-6 py-4">
@@ -107,7 +107,7 @@
                 #loc_id="ngModel"
                 required
                 class="border rounded px-3 py-2 w-full mb-1"
-                [class.border-red-500]="submitted && loc_id.invalid">
+                [class.border-red-500]="submitted && (loc_id.invalid || !formDetails.loc_id)">
           <option value="" disabled selected>Select Location</option>
           <option *ngFor="let loc of locations"
                   [value]="loc.loc_id">
@@ -115,9 +115,10 @@
           </option>
         </select>
 
+
         <!-- Validation Message -->
-        <div *ngIf="submitted && loc_id.invalid" class="text-red-500 text-sm ">
-          <div *ngIf="loc_id.errors?.['required']">Location is required.</div>
+        <div *ngIf="submitted && (loc_id.invalid || !formDetails.loc_id)" class="text-red-500 text-sm">
+          <div *ngIf="loc_id.errors?.['required'] || !formDetails.loc_id">Location is required.</div>
         </div>
       </div>
       <div class="mb-4">
@@ -154,7 +155,7 @@
              (drop)="onDrop($event)"
              (dragover)="onDragOver($event)"
              (click)="fileInput.click()"
-             [class.border-red-500]="submitted && !formDetails.logo_path">
+             [class.border-red-500]="submitted && !formDetails.image_path">
           <p class="text-gray-500 mb-2">Drag & Drop image here or</p>
           <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Browse Files
@@ -167,15 +168,15 @@
         </div>
 
         <!-- Validation Message -->
-        <div *ngIf="submitted && !formDetails.logo_path" class="text-red-500 text-sm ">
+        <div *ngIf="submitted && !formDetails.image_path" class="text-red-500 text-sm ">
           Logo image is required.
         </div>
       </div>
 
       <!-- Image Preview -->
-      <div class="mt-4" *ngIf="formDetails.logo_path">
-        <div class="relative">
-          <img [src]="formDetails.logo_path" alt="News Preview" class="rounded-lg border object-cover w-full h-48" />
+      <div class="mt-4" *ngIf="formDetails.image_path">
+        <div class="reqtyive">
+          <img [src]="formDetails.image_path" alt="News Preview" class="rounded-lg border object-cover w-full h-48" />
           <button type="button"
                   class="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
                   (click)="removeImage()">

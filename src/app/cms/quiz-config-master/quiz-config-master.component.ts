@@ -99,7 +99,7 @@ export class QuizConfigMasterComponent implements OnInit {
     this.formDetails.time_per_ques_in_sec = Number(this.formDetails.time_per_ques_in_sec);
     this.formDetails.passing_score = Number(this.formDetails.passing_score);
 
-    if (!this.formDetails.loc_id || this.formDetails.loc_id === 0) {
+    if (!this.formDetails.quiz_config_id || this.formDetails.quiz_config_id === 0) {
       this.api.post('QuizConfig/CreateQuizConfig', this.formDetails, false).subscribe({
         next: (res: any) => {
           if (res.isSuccessful) {

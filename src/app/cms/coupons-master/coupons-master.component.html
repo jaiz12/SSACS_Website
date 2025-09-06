@@ -2,7 +2,7 @@
 <div class="p-2">
   <!-- Header with Search and Add Button -->
   <div class="flex justify-between items-center mb-4">
-    <h2 class="p-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">Quiz Configuration Master</h2>
+    <h2 class="p-2 text-lg font-semibold text-left rtl:text-right text-gray-900 bg-white dark:text-white dark:bg-gray-800">Coupon Master</h2>
 
     <div class="flex items-center space-x-4">
       <input type="text"
@@ -36,7 +36,7 @@
         <tbody>
           <tr *ngFor="let item of details | searchFilter: searchTerm | paginate: { itemsPerPage: itemsPerPage, currentPage: currentPage } ; let i = index" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
             <td class="px-6 py-4"> {{i + 1}}</td>
-            <td class="px-6 py-4">{{ item.bm_id }}</td>
+            <td class="px-6 py-4">{{ item.bm_name }}</td>
             <td class="px-6 py-4">{{ item.coupon_name }}</td>
             <td class="px-6 py-4">{{ item.description.split(' ').slice(0, 15).join(' ') }}{{ item.description.split(' ').length > 15 ? '...' : '' }}</td>
             <td class="px-6 py-4">{{ item.qty }}</td>
@@ -50,12 +50,12 @@
                        (change)="onStatusChange(item)" />
 
                 <!-- Track -->
-                <div class="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300
-                              dark:peer-focus:ring-blue-800 peer-checked:bg-blue-600 transition-colors duration-300"></div>
+                <span class="w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300
+                              dark:peer-focus:ring-blue-800 peer-checked:bg-blue-600 transition-colors duration-300"></span>
 
                 <!-- Thumb -->
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full
-                              peer-checked:translate-x-5 transition-transform duration-300"></div>
+                <span class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full
+                              peer-checked:translate-x-5 transition-transform duration-300"></span>
 
                 <!-- Label -->
                 <span class="ml-3 text-sm font-medium text-gray-900">
@@ -114,7 +114,7 @@
                 #bm_id="ngModel"
                 required
                 class="border rounded px-3 py-2 w-full mb-1"
-                [class.border-red-500]="submitted && bm_id.invalid">
+                [class.border-red-500]="submitted && (bm_id.invalid || !formDetails.bm_id)">
           <option value="" disabled selected>Select Business</option>
           <option *ngFor="let bm of businessData"
                   [value]="bm.bm_id">
@@ -123,8 +123,8 @@
         </select>
 
         <!-- Validation Message -->
-        <div *ngIf="submitted && bm_id.invalid" class="text-red-500 text-sm ">
-          <div *ngIf="bm_id.errors?.['required']">Business is required.</div>
+        <div *ngIf="submitted && (bm_id.invalid || !formDetails.bm_id)" class="text-red-500 text-sm ">
+          <div *ngIf="bm_id.errors?.['required'] || !formDetails.bm_id">Business is required.</div>
         </div>
       </div>
       <div class="mb-4">
@@ -169,11 +169,12 @@
                  pattern="^-?\d+(\.\d+)?$"
                  placeholder="Enter Quantity"
                  class="border rounded px-3 py-2 w-full mb-1"
-                 [class.border-red-500]="submitted && qty.invalid" />
-          <div *ngIf="submitted && qty.invalid" class="text-red-500 text-sm">
-            <div *ngIf="qty.errors?.['required']">Quantity is required.</div>
-            <div *ngIf="qty.errors?.['pattern']">Quantity must be a valid number.</div>
-          </div>
+                 [class.border-red-500]="submitted && (qty.value == 0 || qty.invalid)" />
+        <div *ngIf="submitted && (qty.value == 0 || qty.invalid)" class="text-red-500 text-sm">
+          <div *ngIf="qty.errors?.['required']">Quantity is required.</div>
+          <div *ngIf="qty.errors?.['pattern']">Quantity must be a valid number.</div>
+          <div *ngIf="qty.value == 0 && qty.valid">Quantity cannot be zero.</div>
+        </div>
         </div>
 
       </div>

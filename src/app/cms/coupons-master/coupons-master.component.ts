@@ -3,6 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { SearchFilterPipe } from '../../shared/pipes/search-filter.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { APIService } from '../../shared/services/api.service';
+import { ToastrService } from 'ngx-toastr';
+import { ConfigService } from '../../shared/services/config.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-coupons-master',
@@ -23,20 +27,32 @@ export class CouponsMasterComponent implements OnInit {
   submitted = false;
 
   // ✅ Correct property used in template
-  formDetails = {coup_id : 0, bm_id: '', coupon_name: '', description: '', qty : '', expiry_date: '', status: true };
+  formDetails = {
+    coup_id: 0,
+    bm_id: 0,
+    bm_name: "",
+    coupon_name: "",
+    description: "",
+    qty: 0,
+    expiry_date: "",
+    status: true,
+    created_on: "2025-09-05",
+    created_by: "Admin",
+    updated_on: "2025-09-05",
+    updated_by: "Admin"
+};
   details: any[] = [];
   buttonName: any;
-  businessData = [
-    { bm_id: 1, bm_name: 'Mumbai' },
-    { bm_id: 2, bm_name: 'Delhi' },
-    { bm_id: 3, bm_name: 'Bengaluru' },
-    { bm_id: 4, bm_name: 'Chennai' },
-    { bm_id: 5, bm_name: 'Kolkata' }
-  ];
+  businessData: any[] = [];
 
   currentPage = 1;  // to track current page
 itemsPerPage = 5;  // items per page
-pageSizes = [5, 10, 20, 50, 100]; // options
+  pageSizes = [5, 10, 20, 50, 100]; // options
+
+  constructor(private api: APIService, private toastr: ToastrService,
+    private configService: ConfigService) {
+
+  }
   ngOnInit() {
     //this.details = Array.from({ length: 100 }, (_, i) => ({
     //  coup_id: i + 1,
@@ -51,6 +67,32 @@ pageSizes = [5, 10, 20, 50, 100]; // options
     //  ).toISOString().split("T")[0], // random date in 2025
     //  status: Math.random() > 0.5 // random true/false
     //}));
+    this.getBusinessDetails();
+    this.getCouponDetails();
+  }
+  getBusinessDetails() {
+    this.api.getAll('Business/GetBusiness', false).subscribe({
+      next: (res: any) => {
+
+        this.businessData = res.data;
+        console.log(this.businessData)
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
+  }
+  getCouponDetails() {
+    this.api.getAll('Coupon/GetCoupon', false).subscribe({
+      next: (res: any) => {
+
+        this.details = res.data;
+        console.log(this.details)
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   onSearchChange() {
@@ -71,26 +113,76 @@ pageSizes = [5, 10, 20, 50, 100]; // options
   onSubmit(form: NgForm) {
     this.submitted = true;
     if (form.invalid) return;
+    var rawDate = this.formDetails.expiry_date;
+    let formattedDate = rawDate;
 
-    if (!this.formDetails.coup_id || this.formDetails.coup_id === 0) {
-      // Add new location
-      this.formDetails.coup_id = this.details.length + 1;
-      this.details.push({ ...this.formDetails });
-    } else {
-      // Update existing location
-      const index = this.details.findIndex(
-        loc => loc.bm_id === this.formDetails.coup_id
-      );
-
-      if (index !== -1) {
-        this.details[index] = { ...this.formDetails };
+    if (typeof rawDate === 'string' && rawDate.includes('-')) {
+      const parts = rawDate.split('-');
+      if (parts[2].length === 4) {
+        // Format is probably DD-MM-YYYY, make it YYYY-MM-DD
+        formattedDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
       }
     }
-    this.reset();
+
+    this.formDetails.expiry_date = formattedDate;
+    console.log(this.formDetails)
+    if (!this.formDetails.coup_id || this.formDetails.coup_id === 0) {
+      // Add new Coupon
+      var business_name = this.businessData.filter((a: any) => a.bm_id == this.formDetails.bm_id);
+      this.formDetails.bm_name = business_name[0].bm_name;
+      this.api.post('Coupon/CreateCoupon', this.formDetails, false).subscribe({
+        next: (res: any) => {
+          if (res.isSuccessful) {
+            this.getCouponDetails();
+            this.reset(form);
+            this.toastr.success(res.message);
+          }
+          else {
+            this.toastr.error(res.message)
+          }
+
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+    } else {
+
+      this.api.update('Coupon/UpdateCoupon', this.formDetails, false).subscribe({
+        next: (res: any) => {
+          if (res.isSuccessful) {
+            this.getCouponDetails();
+            this.reset(form);
+            this.toastr.success(res.message);
+          }
+          else {
+            this.toastr.error(res.message)
+          }
+
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+    }
+    // TODO: Call your API service to save banner
   }
 
   reset(form?: NgForm) {
-    this.formDetails = {coup_id : 0, bm_id: '', coupon_name: '', description: '', qty : '', expiry_date: '', status: true };
+    this.formDetails = {
+      coup_id: 0,
+      bm_id: 0,
+      bm_name: "",
+      coupon_name: "",
+      description: "",
+      qty: 0,
+      expiry_date: "",
+      status: true,
+      created_on: "2025-09-05",
+      created_by: "Admin",
+      updated_on: "2025-09-05",
+      updated_by: "Admin"
+  };
     this.submitted = false;
     this.showModal = false;
     if (form) form.resetForm();
@@ -104,19 +196,52 @@ pageSizes = [5, 10, 20, 50, 100]; // options
     this.showModal = true;
   }
 
-  deleteItem(index: number) {
-    this.details.splice(index, 1);
+  deleteItem(item: any) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You won\'t to Delete this row "${item.coupon_name}" !`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.api.deleteById('Coupon', item.coup_id, false).subscribe({
+          next: (res: any) => {
+            if (res.isSuccessful) {
+              this.toastr.success(res.message);
+              this.reset();
+              this.getCouponDetails();
+            }
+            else {
+              this.toastr.error(res.message)
+            }
+
+          },
+          error: (err) => {
+            console.error(err);
+          }
+        });
+      }
+    });
   }
 
   onStatusChange(item: any) {
-    // Ensure status is 1 (active) or 0 (inactive)
-    item.status = item.status ? 1 : 0;
-  
-    // Call your API or update logic here
-    console.log('Updated row:', item);
-  
-    // Example: call update api with id
-    console.log('Row status updated in backend:', item);
+
+    this.api.updateById('Coupon/ArchiveCoupon', item.coup_id, false).subscribe({
+      next: (res: any) => {
+        if (res.isSuccessful) {
+          this.toastr.success(res.message);
+          this.reset();
+        }
+        else {
+          this.toastr.error(res.message)
+        }
+
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 
   

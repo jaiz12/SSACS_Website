@@ -1,78 +1,92 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { SearchFilterPipe } from '../../shared/pipes/search-filter.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { APIService } from '../../shared/services/api.service';
+import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-take-quiz-cms',
   standalone: true,
-  imports: [CommonModule, FormsModule, SearchFilterPipe,
-    NgxPaginationModule
-  ],
+  imports: [CommonModule, FormsModule, SearchFilterPipe, NgxPaginationModule],
   templateUrl: './take-quiz-cms.component.html',
   styleUrls: ['./take-quiz-cms.component.css']
 })
-export class TakeQuizCmsComponent implements OnInit{
+export class TakeQuizCmsComponent implements OnInit {
   searchTerm = '';
   showQuestionModal = false;
   questionModalTitle = 'Add Question';
   submitted = false;
-
-  formDetails: any = {
-    ques_id: 0,
-    loc_id: '',
-    status: true,
-    question: '',
-    options: []
-  };
-
-  options: any[] = [{ opt_id: 0, ques_id : 0, option_text: '', correct_flag: false }];
+  formDetails: any = this.getInitialFormDetails();
   editingQuestion: any = null;
-
   details: any[] = [];
   buttonName: any;
+  locations: any[] = [];
+  currentPage = 1;
+  itemsPerPage = 5;
+  pageSizes = [5, 10, 20, 50, 100];
 
-  locations = [
-    { loc_id: 1, name: 'Mumbai' },
-    { loc_id: 2, name: 'Delhi' },
-    { loc_id: 3, name: 'Bengaluru' },
-    { loc_id: 4, name: 'Chennai' },
-    { loc_id: 5, name: 'Kolkata' }
-  ];
-
-  currentPage = 1;  // to track current page
-itemsPerPage = 5;  // items per page
-pageSizes = [5, 10, 20, 50, 100]; // options
+  constructor(private toastr: ToastrService, public api: APIService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
-   
+    this.getLocationDetails();
+    this.getQuizDetails();
   }
 
-  onSearchChange() {
-    this.currentPage = 1; // reset page when searching
+  getInitialFormDetails() {
+    return {
+      ques_id: 0,
+      loc_id: 0,
+      loc_name: '',
+      question: '',
+      options: [{
+        opt_id: 0,
+        ques_id: 0,
+        option_text: '',
+        correct_flag: false
+      }],
+      status: true,
+      created_on: "2025-09-05",
+      created_by: "Admin",
+      updated_on: "2025-09-05",
+      updated_by: "Admin"
+    };
   }
 
-  onPageSizeChange(event: Event) {
-    this.currentPage = 1;
+  getLocationDetails() {
+    this.api.getAll('Location/GetLocation', false).subscribe({
+      next: (res: any) => { this.locations = res.data; },
+      error: (err) => { console.error(err); }
+    });
   }
+
+  getQuizDetails() {
+    this.api.getAll('QuizQuesAns/GetAllQuizQnAConfig', false).subscribe({
+      next: (res: any) => { this.details = res.data; console.log(this.details) },
+      error: (err) => { console.error(err); }
+    });
+  }
+
+  onSearchChange() { this.currentPage = 1; }
+  onPageSizeChange(event: Event) { this.currentPage = 1; }
 
   getOptionLabel(index: number): string {
     return String.fromCharCode(65 + index);
   }
 
   setCorrectOption(selectedIndex: number) {
-    this.options.forEach((opt, idx) => {
-      opt.correct_flag = idx === selectedIndex; // Only one option is true
+    // Only one correct by default, toggle others off
+    this.formDetails.options.forEach((opt: any, idx: number) => {
+      opt.correct_flag = idx === selectedIndex;
     });
   }
 
   addNew() {
     this.questionModalTitle = 'Add Question';
     this.buttonName = 'Save'
-    this.formDetails = { ques_id: 0, loc_id: '', status: true, question: '', options: [] };
-    this.options = [{ option_text: '', correct_flag: false }];
-    this.editingQuestion = null;
+    this.reset();
     this.submitted = false;
     this.showQuestionModal = true;
   }
@@ -80,63 +94,135 @@ pageSizes = [5, 10, 20, 50, 100]; // options
   editItem(item: any) {
     this.questionModalTitle = 'Edit Question';
     this.buttonName = 'Update'
-    this.formDetails = { ...item };
-    this.options = item.options.length ? [...item.options] : [{ option_text: '', correct_flag: false }];
+    this.formDetails = JSON.parse(JSON.stringify(item));
     this.editingQuestion = item;
     this.submitted = false;
     this.showQuestionModal = true;
   }
 
-  deleteItem(item: any) {
-    this.details = this.details.filter(d => d !== item);
+  addOption() {
+    this.formDetails.options.push({
+      opt_id: 0,
+      ques_id: 0,
+      option_text: '',
+      correct_flag: false
+    });
+    this.formDetails.options = [...this.formDetails.options];
+    this.cdr.detectChanges(); // triggers UI refresh
   }
 
-  addOption() {
-    this.options.push({ option_text: '', correct_flag: false });
+  trackByIndex(index: number, item: any): number {
+    return index;
   }
 
   removeOption(index: number) {
-    this.options.splice(index, 1);
+    this.formDetails.options.splice(index, 1);
   }
 
   hasCorrectOption(): boolean {
-    return this.options.some(opt => opt.correct_flag);
+    return this.formDetails.options.some((opt: any) => opt.correct_flag);
   }
 
-  closeQuestionModal() {
+  reset(quizForm?: NgForm) {
     this.showQuestionModal = false;
-    this.formDetails = { ques_id: 0, loc_id: 0, status: true, question: '', options: [] };
-    this.options = [{ option_text: '', correct_flag: false }];
-    this.editingQuestion = null;
+    this.formDetails = this.getInitialFormDetails();
     this.submitted = false;
+    if (quizForm) quizForm.resetForm();
   }
 
-  saveQuestion(form: NgForm) {
+  saveQuestion(quizForm: NgForm) {
     this.submitted = true;
-
-    // Check if form is valid
-    if (form.invalid || this.options.some(opt => !opt.option_text.trim())) return;
-
-    this.formDetails.options = [...this.options];
-
-    if (this.editingQuestion) {
-      Object.assign(this.editingQuestion, this.formDetails);
-    } else {
-      this.formDetails.ques = this.details.length + 1;
-      this.details.push({ ...this.formDetails });
+    console.log(this.formDetails);
+    // Validation: check for required fields, at least one correct option, and nonempty option_texts
+    const hasAllOptionTexts = this.formDetails.options.every((opt: any) => !!opt.option_text.trim());
+    if (quizForm.invalid || !hasAllOptionTexts || !this.hasCorrectOption()) {
+      return;
     }
 
-    this.closeQuestionModal();
+    if (!this.formDetails.ques_id || this.formDetails.ques_id === 0) {
+      this.api.post('QuizQuesAns/CreateQuizQnAConfig', this.formDetails, false).subscribe({
+        next: (res: any) => {
+          if (res.isSuccessful) {
+            this.toastr.success(res.message);
+            this.reset();
+            this.getQuizDetails();
+          }
+          else {
+            this.toastr.error(res.message)
+          }
+
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+
+    } else {
+      // Update existing location
+      this.api.update('QuizQuesAns/UpdateQuizQnAConfig', this.formDetails, false).subscribe({
+        next: (res: any) => {
+          if (res.isSuccessful) {
+            this.toastr.success(res.message);
+            this.reset();
+            this.getQuizDetails();
+          }
+          else {
+            this.toastr.error(res.message)
+          }
+
+        },
+        error: (err) => {
+          console.error(err);
+        }
+      });
+    }
+  }
+
+  deleteItem(item: any) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You won\'t to Delete this row ${item.loc_name}!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Delete!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.api.deleteById('QuizQuesAns', item.ques_id, false).subscribe({
+          next: (res: any) => {
+            if (res.isSuccessful) {
+              this.toastr.success(res.message);
+              this.reset();
+              this.getQuizDetails();
+            }
+            else {
+              this.toastr.error(res.message)
+            }
+
+          },
+          error: (err) => {
+            console.error(err);
+          }
+        });
+      }
+    });
   }
 
   onStatusChange(item: any) {
-    // Ensure status is 1 (active) or 0 (inactive)
-    item.status = item.status ? 1 : 0;
-  
-    // Call your API or update logic here
-    console.log('Updated row:', item);
-  
-    // Example: call update api with id
-    console.log('Row status updated in backend:', item);
+
+    this.api.updateById('QuizQuesAns/ArchiveQuizQnAConfig', item.ques_id, false).subscribe({
+      next: (res: any) => {
+        if (res.isSuccessful) {
+          this.toastr.success(res.message);
+          this.reset();
+        }
+        else {
+          this.toastr.error(res.message)
+        }
+
+      },
+      error: (err) => {
+        console.error(err);
+      }
+    });
   }
 }
