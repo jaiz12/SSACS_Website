@@ -15,9 +15,10 @@ export class UrlParserService {
     try {
       // The URL object handles parsing the protocol, hostname, etc.
       const urlObject = new URL(url);
-
+      console.log(urlObject.host)
       // The 'hostname' property contains the domain name.
-      return urlObject.hostname;
+      //return urlObject.hostname;
+      return urlObject.host;
     } catch (error) {
       console.error('Invalid URL:', error);
       return null;

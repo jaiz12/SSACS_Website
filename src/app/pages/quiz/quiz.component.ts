@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -7,6 +7,7 @@ import { AppComponent } from '../../app.component';
 import { ConfigService } from '../../shared/services/config.service';
 import { APIService } from '../../shared/services/api.service';
 import { ToastrService } from 'ngx-toastr';
+import { UrlParserService } from '../../shared/services/url-parser.service';
 
 interface Option {
   option_text: string;
@@ -34,7 +35,7 @@ interface Coupon {
 })
 export class QuizComponent implements OnInit, OnDestroy {
   questions: Question[] = [];
-  sponsors : any =[];
+  sponsors: any = [];
   allCoupons: Coupon[] = [];
   availableCoupons: Coupon[] = [];
   currentQuestionIndex = 0;
@@ -50,17 +51,17 @@ export class QuizComponent implements OnInit, OnDestroy {
   isOptionDisabled = false;
   showForm = true;
   quizConfigDetails: any = {}
-;
-  location: any = '';
+    ;
+  url: any = '';
   quizdetails: any[] = [];
   business: any = [];
   couponDetails: any = {};
   imageApiUrl: any;
-  private locationInterval: any;
   private refreshInterval: any;
   formDetails = { contact_no: '', age: '', gender: '', created_on: '' };
   constructor(private http: HttpClient, private appComponent: AppComponent, private api: APIService, private configService: ConfigService,
-    private toastr: ToastrService) {
+    private toastr: ToastrService, private urlParser: UrlParserService,
+    @Inject(DOCUMENT) private document: Document) {
 
   }
 
@@ -68,33 +69,25 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.imageApiUrl = this.configService.get("imageApiUrl");
     // Set to 500ms or 1000ms to avoid performance issues
     // 🔹 Keep checking until location is available
-    this.appComponent.location$.subscribe(location => {
-      this.location = location;
-      console.log('Location:', this.location);
-
-      if (this.location) {
+    this.url = this.urlParser.getDomainFromUrl(this.document.location.href);
+    if (this.url) {
+      this.getBusiness();
+      this.refreshInterval = setInterval(() => {
         this.getBusiness();
-        this.refreshInterval = setInterval(() => {
-          this.getBusiness();
-        }, 5000);
-        clearInterval(this.locationInterval);
-      }
-    });
+      }, 5000);
+    }
   }
 
   ngOnDestroy() {
-    if (this.locationInterval) {
-      clearInterval(this.locationInterval);
-    }
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
-    
+
   }
 
-  
 
-  
+
+
 
   startTimer() {
     console.log(this.quizConfigDetails.time_per_ques_in_sec)
@@ -147,20 +140,20 @@ export class QuizComponent implements OnInit, OnDestroy {
     } else {
       this.quizOver = true;
       if (this.score >= this.quizConfigDetails.passing_score) {
-        var json = {          
+        var json = {
           "session_id": 0,
           "participant_id": localStorage.getItem('quiz_participant_id'),
-          "loc_name": this.location,
+          "url": this.url,
           "score": this.score,
           "pass_flag": true,
           "played_on": "2025-09-09T10:39:12.765Z"
         }
-        
-         this.api.post('QuizSession/SaveSessionAndIssueCoupon', json, false).subscribe({
-      next: (res: any) => {
-        if (res.isSuccessful) {
-          var couponDetails = res.data;
-          this.winMessage = `
+
+        this.api.post('QuizSession/SaveSessionAndIssueCoupon', json, false).subscribe({
+          next: (res: any) => {
+            if (res.isSuccessful) {
+              var couponDetails = res.data;
+              this.winMessage = `
     <strong><p class="text-3xl text-green-600 mb-3">Congratulations! </p></strong>
     <p class="text-1xl text-green-600 mb-3">You did great — Your awareness makes a difference!</p>
     <p class="text-2xl text-yellow-600 mb-3">You have won a coupon</p>
@@ -169,17 +162,17 @@ export class QuizComponent implements OnInit, OnDestroy {
     <p lass="text-1xl text-green-600 mb-3">Visit: <strong><em>${couponDetails.rest_name}</em></strong></p>
     <p lass="text-1xl text-green-600 mb-3">And Enjoy: <strong> ${couponDetails.desc}</strong></p>
   `;
-    this.messageColor = 'green';
-        }
-        else {
-          this.toastr.error(res.message)
-        }
+              this.messageColor = 'green';
+            }
+            else {
+              this.toastr.error(res.message)
+            }
 
-      },
-      error: (err) => {
-        console.error(err);
-      }
-    });       // show success message
+          },
+          error: (err) => {
+            console.error(err);
+          }
+        });       // show success message
       } else {
         this.winMessage = 'Almost there! Our FAQ section can help fill the gaps.';
         this.messageColor = 'red';
@@ -187,7 +180,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     }
   }
 
-  
+
   reset(form?: NgForm) {
     this.formDetails = { contact_no: '', age: '', gender: '', created_on: '' };
     if (form) form.resetForm();
@@ -200,7 +193,7 @@ export class QuizComponent implements OnInit, OnDestroy {
     this.api.post('QuizSession/CreateParticipant', this.formDetails, false).subscribe({
       next: (res: any) => {
         if (res.isSuccessful) {
-          localStorage.setItem('quiz_participant_id' , res.data)
+          localStorage.setItem('quiz_participant_id', res.data)
           this.toastr.success(res.message)
           this.showForm = false;
           this.reset();
@@ -216,14 +209,14 @@ export class QuizComponent implements OnInit, OnDestroy {
       }
     });
     // If form is valid, proceed
-    
+
   }
 
   getQuestions() {
-    this.api.getAll('Website/GetWebsiteContent', this.location, 'quiz', false).subscribe({
+    this.api.getAll('Website/GetWebsiteContent', this.url, 'quiz', false).subscribe({
       next: (res: any) => {
         this.showForm = false;
-         console.log(res.data)
+        console.log(res.data)
         this.quizConfigDetails = {
           time_per_ques_in_sec: res.data.time_per_ques_in_sec,
           passing_score: res.data.passing_score
@@ -237,11 +230,11 @@ export class QuizComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
   getBusiness() {
-    this.api.getAll('Website/GetWebsiteContent', 'Deorali', 'business', false).subscribe({
+    this.api.getAll('Website/GetWebsiteContent', this.url, 'business', false).subscribe({
       next: (res: any) => {
-       
+
         this.business = res.data;
         console.log(this.business)
       },

@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { AppComponent } from '../../app.component';
 import { APIService } from '../../shared/services/api.service';
 import { ConfigService } from '../../shared/services/config.service';
+import { UrlParserService } from '../../shared/services/url-parser.service';
 
 @Component({
   selector: 'app-facts-myths',
@@ -15,9 +16,11 @@ import { ConfigService } from '../../shared/services/config.service';
 export class FactsMythsComponent implements OnInit, OnDestroy {
   // Facts & Myths themed images for the carousel
   images: any = [];
-  location: any;
+  url: any;
   imageApiUrl: any;
-  constructor(private appComponent: AppComponent, private api: APIService, private configService: ConfigService) { }
+  constructor(private appComponent: AppComponent, private api: APIService, private configService: ConfigService, private urlParser: UrlParserService,
+    @Inject(DOCUMENT) private document: Document
+  ) { }
 
   currentSlide = 0;
   private autoPlayInterval: any;
@@ -27,24 +30,17 @@ export class FactsMythsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.startAutoPlay();
     // 🔹 Keep checking until location is available
-    this.appComponent.location$.subscribe(location => {
-      this.location = location;
-      console.log('Location:', this.location);
-
-      if (this.location) {
+    this.url = this.urlParser.getDomainFromUrl(this.document.location.href);
+    if (this.url) {
+      this.getFactsAndMythsBannerImage();
+      this.refreshInterval = setInterval(() => {
         this.getFactsAndMythsBannerImage();
-        this.refreshInterval = setInterval(() => {
-          this.getFactsAndMythsBannerImage();
-        }, 5000);
-        clearInterval(this.locationInterval);
-      }
-    });
+      }, 5000);
+
+    }
   }
 
   ngOnDestroy() {
-    if (this.locationInterval) {
-      clearInterval(this.locationInterval);
-    }
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
@@ -82,7 +78,7 @@ export class FactsMythsComponent implements OnInit, OnDestroy {
 
 
   getFactsAndMythsBannerImage() {
-    this.api.getAll('Website/GetWebsiteContent', this.location, 'facts', false).subscribe({
+    this.api.getAll('Website/GetWebsiteContent', this.url, 'facts', false).subscribe({
       next: (res: any) => {
         if (res.data.length > 0) {
           this.images = [];

@@ -1,7 +1,8 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { AppComponent } from '../../app.component';
 import { APIService } from '../../shared/services/api.service';
+import { UrlParserService } from '../../shared/services/url-parser.service';
 
 @Component({
   selector: 'app-faq',
@@ -15,30 +16,24 @@ export class FaqComponent implements OnInit, OnDestroy {
   openIndex: number = 0; // first FAQ open by default
   private locationInterval: any;
   private refreshInterval: any;
-  location: any = [];
+  url: any = [];
 
-  constructor(private appComponent: AppComponent, private api: APIService) { }
+  constructor(private appComponent: AppComponent, private api: APIService, private urlParser: UrlParserService,
+    @Inject(DOCUMENT) private document: Document) { }
 
   ngOnInit() {
     // 🔹 Keep checking until location is available
-    this.appComponent.location$.subscribe(location => {
-      this.location = location;
-      console.log('Location:', this.location);
-
-      if (this.location) {
+    this.url = this.urlParser.getDomainFromUrl(this.document.location.href);
+    if (this.url) {
+      this.getFAQs();
+      this.refreshInterval = setInterval(() => {
         this.getFAQs();
-        this.refreshInterval = setInterval(() => {
-          this.getFAQs();
-        }, 5000);
-        clearInterval(this.locationInterval);
-      }
-    });
+      }, 5000);
+    }
+        
   }
 
   ngOnDestroy() {
-    if (this.locationInterval) {
-      clearInterval(this.locationInterval);
-    }
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
     }
@@ -49,7 +44,7 @@ export class FaqComponent implements OnInit, OnDestroy {
   }
 
   getFAQs() {
-    this.api.getAll('Website/GetWebsiteContent', this.location, 'faqs', false).subscribe({
+    this.api.getAll('Website/GetWebsiteContent', this.url, 'faqs', false).subscribe({
       next: (res: any) => {
         if (res.data.length > 0) {
           this.faqsDetails = res.data;

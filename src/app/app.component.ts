@@ -51,50 +51,6 @@ export class AppComponent implements OnInit {
         }
       }
     });
-
-    
-
-    this.getLocation();
-    this.locationInterval = setInterval(() => {
-      this.getLocation();
-      console.log("get location intervel")
-    }, 60 * 60 * 1000);
-  }
-
-  ngOnDestroy() {
-    if (this.locationInterval) {
-      clearInterval(this.locationInterval);
-      console.log("destroy")
-    }
-  }
-
-  error: any;
-  getLocation() {
-    console.log("get location")
-    this.locationservice
-      .getLatLon()
-      .then((position) => {
-        const lat = position.lat;
-        const lon = position.lon;
-        console.log("test")
-        this.locationservice.getLocationName(lat, lon).subscribe({
-          next: (res: any) => {
-            this.locationSubject.next({
-              lat : res.results[0].geometry.lat,
-              lon : res.results[0].geometry.lng,
-              name : res.results[0].components.suburb
-
-            })
-          },
-          error: () => {
-            this.error = 'Failed to fetch location name.';
-          },
-        });
-      })
-      .catch((err) => {
-        this.error = 'Geolocation permission denied or unavailable.';
-        console.error(err);
-      });
   }
 
   @HostListener('window:mousemove')
