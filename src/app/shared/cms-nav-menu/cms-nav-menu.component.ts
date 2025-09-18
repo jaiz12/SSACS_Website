@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ToastrModule, ToastrService } from 'ngx-toastr';
-import { ConfigService } from '../services/config.service';
 
 @Component({
   selector: 'app-cms-nav-menu',
@@ -12,12 +11,11 @@ import { ConfigService } from '../services/config.service';
   styleUrl: './cms-nav-menu.component.css'
 })
 export class CmsNavMenuComponent {
-  constructor(private router: Router, private toastr: ToastrService, private configService: ConfigService) { }
+  constructor(private router: Router,private toastr: ToastrService){}
   logout(){
     localStorage.clear(); // Clears all stored data
     
   this.toastr.info('Logged out successfully!');
-    const websiteUrl = this.configService.get("websiteUrl");
-    window.location.href = `${websiteUrl}?logout=true`;
+  this.router.navigate(['/']); // Redirect to login page
   }
 }

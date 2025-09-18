@@ -1,0 +1,48 @@
+<div class="login-container bg-gradient-to-br from-red-50 via-white to-red-50 p-6 pb-6">
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <h2 class="title mb-4 text-2xl font-bold">Login</h2>
+
+    <!-- Email Field -->
+    <div class="mb-4">
+      <label for="email">Email <span class="text-red-500">*</span></label>
+      <input type="email"
+             name="email"
+             id="email"
+             [(ngModel)]="loginDetails.email"
+             #email="ngModel"
+             required
+             email
+             placeholder="Enter Email Address"
+             class="border rounded px-3 py-2 w-full mb-1" />
+             <div *ngIf="submitted && email.invalid" class="text-red-500 text-sm">
+              <div *ngIf="submitted && email.invalid && email.errors?.['required']">Email is required.</div>
+              <div *ngIf="email.errors?.['email']">Enter a valid email address.</div>
+            </div>
+    </div>
+
+    <!-- Password Field -->
+    <div class="mb-4">
+      <label for="password">Password <span class="text-red-500">*</span></label>
+      <input type="password"
+             name="password"
+             id="password"
+             [(ngModel)]="loginDetails.password"
+             #password="ngModel"
+             required
+             placeholder="Enter Password"
+             class="border rounded px-3 py-2 w-full mb-1" />
+             <div *ngIf="submitted && (password.invalid || isPasswordInvalid(loginDetails.password))" class="text-red-500 text-sm">
+              <div *ngIf="password.errors?.['required']">Password is required.</div>
+              <div *ngIf="!password.errors?.['required'] && isPasswordInvalid(loginDetails.password)">
+                Password must contain at least one uppercase letter, one number, and one symbol.
+              </div>
+            </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+      Login
+    </button>
+  </form>
+</div>

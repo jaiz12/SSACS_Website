@@ -19,20 +19,16 @@ constructor(private http: HttpClient, private configService : ConfigService) {
 
    // CREATE
    post(endpoint: string, payload: any, isFormData: boolean = false): Observable<any> {
-   let options: any = {};
-
-  if (!isFormData) {
-    options.headers = this.getHeaders(false); // JSON headers
-  } else {
-    // Do not set Content-Type, browser will add correct multipart boundary
-    options.headers = this.getHeaders(true);
-  }
-
-  return this.http.post<any>(`${this.APIURL}/${endpoint}`, payload, options);
+    return this.http.post<any>(`${this.APIURL}/${endpoint}`, payload, {
+      headers: this.getHeaders(isFormData),
+    });
   }
 
   // READ (Get all)
-  getAll(endpoint: string, params?: any, isFormData: boolean = false): Observable<any> {
+  getAll(endpoint: string, loc_name: any, page_name: any, isFormData: boolean = false): Observable<any> {
+    const params = new HttpParams()
+      .set('loc_name', loc_name) // ensure matches .NET param signature!
+      .set('page_name', page_name);
     return this.http.get(`${this.APIURL}/${endpoint}`, { params });
   }
 
@@ -44,23 +40,14 @@ constructor(private http: HttpClient, private configService : ConfigService) {
   }
 
   // UPDATE
-  update(endpoint: string, payload: any, isFormData: boolean = false): Observable<any> {
-    return this.http.put<any>(`${this.APIURL}/${endpoint}`, payload, {
-      headers: this.getHeaders(isFormData),
-    });
-  }
-
-  updateById(endpoint: string, id: any, isFormData: boolean = false): Observable<any> {
-    const params = new HttpParams()
-      .set('id', id) // ensure matches .NET param signature!
-      .set('updatedBy', 'Admin');
-    return this.http.put<any>(`${this.APIURL}/${endpoint}`, {}, { params,
+  update(endpoint: string, id: number | string, payload: any, isFormData: boolean = false): Observable<any> {
+    return this.http.put<any>(`${this.APIURL}/${endpoint}/${id}`, payload, {
       headers: this.getHeaders(isFormData),
     });
   }
 
   // DELETE
-  deleteById(endpoint: string, id: number | string, isFormData: boolean = false): Observable<any> {
+  delete(endpoint: string, id: number | string, isFormData: boolean = false): Observable<any> {
     return this.http.delete<any>(`${this.APIURL}/${endpoint}/${id}`, {
       headers: this.getHeaders(isFormData),
     });

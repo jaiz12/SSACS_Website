@@ -1,8 +1,30 @@
 {
+  "home_static_details": [
+    {
+    "facts_and_myths": "Separate truth from misconceptions"
+    },
+    {
+      "about_ssacs": "Our mission and services"
+    },
+    {
+      "take_quiz": "Test your awareness"
+    }
+    
+  ],
+  
+  "home_remember_static_details": "Knowledge about HIV/AIDS helps prevent transmission and reduces stigma. Get tested, stay informed, and support those affected.",
+
+  "about_ssacs_static_details":  "Sikkim State AIDS Control Society (SSACS) was established back in April, 1999 with a goal to halt and reverse the epidemic of AIDS. While we function as per the guidelines of National AIDS Control Programme (NACO), we have also established Targeted Intervention Programmes which is implemented through the help of local NGOs.",
+   
+  "about_our_mission_static_details": [
+    {
+      "para":"Our mission and priority lies in providing the high risk population (Female Sex Workers -FSW, Male Having Sex with Male-MSM and Injecting Drug Users-IDUs) with the information, means and skills they need to minimise HIV transmission and improving their access to care, support and treatment. Our programmes also help to improve Sexual and Reproductive Health (SRH) of individuals by helping them reduce the harm associated with sex work and injecting drug use. Besides that, we have set up various counselling and testing centres, along with Mobile ICTC vans to reach far flung areas and to spread awareness amid rural population."
+    },
+    {
+      "para":"In order to accomplish another one of our missions, we work with Red Ribbon Clubs (RRC) which aim to spread awareness among the youth (age group of 15-29 years) about HIV, toencourage voluntary blood donations and to provide solidarity, hope and support for those living with HIV."
+    }
+  ],
+  "footerEmail" : "infosacs-sikkim.org",
   "apiUrl": "https://ssacs-api.argiasolutions.website/api",
-  "imageApiUrl": "https://ssacs-api.argiasolutions.website/",
-  "websiteUrl": "http://localhost:4200/",
-  "wsPort": 3000,
-  "wsPath": "/",
-  "wsProtocol": "ws"
+  "imageApiUrl": "https://ssacs-api.argiasolutions.website/"
 }

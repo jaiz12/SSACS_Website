@@ -1,0 +1,33 @@
+<!-- Spacer to prevent content from being hidden -->
+<div class="h-24"></div> <!-- adjust height to match your footer height -->
+
+<!-- Sticky footer -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+  <div class="mx-auto max-w-7xl bg-white border-t-2 border-red-100 shadow-xl rounded-t-2xl px-4 py-6 text-center">
+    <div class="flex justify-center space-x-8">
+      <a routerLink="/" routerLinkActive="text-red-600 font-bold border-b-2 border-red-600"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="text-gray-600 hover:text-red-600 transition-colors text-lg font-medium pb-1"
+        (click)="scrollToTop()">Home</a>
+      <span class="text-gray-400">|</span>
+      <a routerLink="/facts-myths" routerLinkActive="text-red-600 font-bold border-b-2 border-red-600"
+        class="text-gray-600 hover:text-red-600 transition-colors text-lg font-medium pb-1"
+        (click)="scrollToTop()">Facts & Myths</a>
+      <span class="text-gray-400">|</span>
+      <a routerLink="/quiz" routerLinkActive="text-red-600 font-bold border-b-2 border-red-600"
+        class="text-gray-600 hover:text-red-600 transition-colors text-lg font-medium pb-1" (click)="scrollToTop()">Take
+        Quiz</a>
+      <span class="text-gray-400">|</span>
+      <a routerLink="/faq" routerLinkActive="text-red-600 font-bold border-b-2 border-red-600"
+        class="text-gray-600 hover:text-red-600 transition-colors text-lg font-medium pb-1"
+        (click)="scrollToTop()">FAQ</a>
+      <span class="text-gray-400">|</span>
+      <a routerLink="/about-us" routerLinkActive="text-red-600 font-bold border-b-2 border-red-600"
+        class="text-gray-600 hover:text-red-600 transition-colors text-lg font-medium pb-1"
+        (click)="scrollToTop()">About SSACS</a>
+    </div>
+    <div class="mt-4 text-sm text-gray-500">
+      <p>24/7 Helpline No: 1097 | Email: <a class="underline text-blue-500" [href]="mailto">{{email}}</a></p>
+    </div>
+  </div>
+</div>

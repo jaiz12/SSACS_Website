@@ -6,17 +6,9 @@ import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/c
 import { BrowserAnimationsModule, provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr, ToastrModule } from 'ngx-toastr';
 import { ToastTailwindComponent } from './shared/services/toast-tailwind.component';
-import { WebSocketService } from './shared/services/websocket.service';
 
 export function initializeApp(configService: ConfigService): () => Promise<void> {
   return () => configService.loadConfig().then(() => Promise.resolve());
-}
-// NEW: WebSocket Initializer (runs after config loaded)
-export function initializeWebSocket(configService: ConfigService, webSocketService: WebSocketService): () => void {
-  return () => {
-    // By this time, ConfigService is loaded (guaranteed by Angular's APP_INITIALIZER execution order)
-    webSocketService.connect();
-  };
 }
 
 export const appConfig: ApplicationConfig = {

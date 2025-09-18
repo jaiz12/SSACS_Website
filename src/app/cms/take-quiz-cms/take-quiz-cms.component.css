@@ -1,8 +1,0 @@
-.big-checkbox {
-  transform: scale(1.5); /* Makes checkbox 1.5x normal size */
-  margin-right: 0.5rem; /* Keep space between checkbox and label */
-}
-
-  .big-checkbox:checked {
-    accent-color: #2563eb; /* Optional: change color in modern browsers */
-  }

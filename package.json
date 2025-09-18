@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "node server.js && ng build",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -19,13 +19,9 @@
     "@angular/platform-browser-dynamic": "^19.1.0",
     "@angular/router": "^19.1.0",
     "@tailwindcss/postcss": "^4.1.11",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
     "ngx-pagination": "^6.0.3",
     "ngx-toastr": "^19.0.0",
-    "node-fetch": "^3.3.2",
     "rxjs": "~7.8.0",
-    "sweetalert2": "^11.23.0",
     "swiper": "^11.2.9",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -35,7 +31,7 @@
     "@angular/cli": "^19.1.5",
     "@angular/compiler-cli": "^19.1.0",
     "@types/jasmine": "~5.1.0",
-    "autothis.imageApiUrler": "^10.4.21",
+    "autoprefixer": "^10.4.21",
     "jasmine-core": "~5.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

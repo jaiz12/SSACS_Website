@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, CanActivate, Router } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { ConfigService } from './config.service';
 
 
 @Injectable({
@@ -9,17 +8,14 @@ import { ConfigService } from './config.service';
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private authService: AuthService, private router: Router,private route: ActivatedRoute, private configService: ConfigService) { }
+  constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): boolean {
-    if (localStorage.getItem("token")) {
-      console.log(localStorage.getItem("token"))
+    if (this.authService.isLoggedIn()) {
       return true; // allow access
     }
-      else {
-      // redirect to home or login
-      window.location.href = this.configService.get("websiteUrl");
-      return false;
-    }
+    // redirect to home or login
+    this.router.navigate(['/']);
+    return false;
   }
 }

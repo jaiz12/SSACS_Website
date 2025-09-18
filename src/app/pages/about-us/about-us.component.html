@@ -1,0 +1,132 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-50 p-6 pb-1 flex flex-col justify-center">
+  <div class="max-w-4xl mx-auto w-full">
+    <!-- Header with SSACS Branding -->
+    <div class="mb-9">
+      <div class="mb-4">
+       <img src="assets/images/ssacs-logo.png"
+          alt="SSACS Logo" class="w-[105px] h-[105px] mx-auto object-cover" />
+      </div>
+      <h1 class="text-4xl font-bold text-red-600 mb-4 text-center">About SSACS</h1>
+      <p class="text-xl text-gray-600 mt-7 text-justify">
+       {{about}}
+      </p>
+      <h1 class="text-2xl font-bold text-red-600 my-4 text-center mt-9">HELPLINE NO: 1097</h1>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="bg-white rounded-2xl shadow-xl p-8 mb-10 border-2 border-red-200">
+      <!-- <div class="grid md:grid-cols-2 gap-8 items-center"> -->
+      <div>
+        <div>
+          <h2 class="text-3xl font-bold text-red-600 mb-6">Our Mission</h2>
+          <p class="text-lg text-gray-600 leading-relaxed text-justify mb-5" *ngFor="let data of ourMission">
+            {{ data.para }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <h1 class="text-3xl font-bold text-red-600 mb-6">Keep In Touch</h1>
+
+
+    <!-- QR Codes Section -->
+    <div class="grid md:grid-cols-3 gap-8 mb-10">
+      <!-- Website QR Code -->
+      <div
+        class="group bg-white rounded-2xl shadow-lg hover:shadow-xl  p-8 text-center border-2 border-red-200">
+        <div class="text-4xl text-blue-500 mb-4">
+          <i class="fas fa-link"></i>
+        </div>
+        <div class="bg-gray-200 w-32 h-32 mx-auto mb-4 rounded-lg flex items-center justify-center overflow-hidden">
+          <img src="assets/images/web.jpeg" alt="WEB QR Code" class="w-full h-full object-cover">
+        </div>
+      </div>
+
+      <!-- Facebook QR Code -->
+      <div
+        class="group bg-white rounded-2xl shadow-lg hover:shadow-xl p-8 text-center border-2 border-red-200">
+        <div class="text-4xl text-blue-600 mb-4">
+          <i class="fab fa-facebook"></i>
+        </div>
+        <div class="bg-gray-200 w-32 h-32 mx-auto mb-4 rounded-lg flex items-center justify-center overflow-hidden">
+          <img src="assets/images/fb.jpeg" alt="FB QR Code" class="w-full h-full object-cover">
+        </div>
+      </div>
+
+      <!-- Instagram QR Code -->
+      <div
+        class="group bg-white rounded-2xl shadow-lg hover:shadow-xl p-8 text-center border-2 border-red-200">
+        <div class="text-4xl text-pink-500 mb-4">
+          <i class="fab fa-instagram"></i>
+        </div>
+        <div class="bg-gray-200 w-32 h-32 mx-auto mb-4 rounded-lg flex items-center justify-center overflow-hidden">
+          <img src="assets/images/ig.jpeg" alt="Instagram QR Code" class="w-full h-full object-cover">
+        </div>
+      </div>
+    </div>
+
+
+    <h1 class="text-3xl font-bold text-red-600 mb-6">Our Updates</h1>
+
+    <!-- Our Updates Section -->
+   <!-- Our Updates Section -->
+    <div class="grid md:grid-cols-2 gap-6 mb-10">
+      <!-- News 1 -->
+      <div class="bg-white rounded-2xl shadow-lg p-0 flex flex-col h-full overflow-hidden" *ngFor="let news of ourUpdates">
+
+        <div class="h-40 w-full overflow-hidden">
+          <img [src]="news.image_path" alt="News Image" class="w-full h-full object-cover" />
+        </div>
+
+        <div class="flex-1 p-4 flex flex-col">
+          <div class="text-[1.1rem] text-blue-500 uppercase font-semibold text-left mb-2">
+            {{news.title}}
+          </div>
+          <p class="flex items-center text-gray-600 mb-2">
+            <i class="far fa-calendar-alt text-red-600 mr-2"></i>
+            Date: {{news.news_date | date: 'yyyy-MM-dd'}}
+          </p>
+          <p class="mt-0 mb-4 text-gray-700 text-justify">
+            {{news.description}}
+            <!-- <span class="float-right">
+              <a href="#" class="text-red-600 rounded hover:bg-red-100 transition-colors duration-300 font-semibold">
+                Read More<span class="ml-1 text-lg">&raquo;</span>
+              </a>
+            </span> -->
+          </p>
+        </div>
+      </div>
+
+      <!-- News 2 -->
+      <!--<div class="bg-white rounded-2xl shadow-lg p-0 flex flex-col h-[30rem] overflow-hidden">
+
+        <div class="h-40 w-full overflow-hidden">
+          <img src="assets/images/news2.jpeg" alt="News Image" class="w-full h-full object-cover" />
+        </div>
+
+        <div class="flex-1 p-4 flex flex-col">
+          <div class="text-[1.1rem] text-blue-500 uppercase font-semibold text-left min-h-[5rem]">
+            CST Division Review Meeting - 28th May 2025
+          </div>
+          <p class="flex items-center text-gray-600 mb-2">
+            <i class="far fa-calendar-alt text-red-600 mr-2"></i>
+            Date: May 14, 2025
+          </p>
+          <p class="mt-0 mb-4 text-gray-700 text-justify">
+            A review meeting organized by the Care, Support & Treatment (CST) Division of the Sikkim State AIDS Control
+            Society (SSACS) was held on 28th May 2025 at the SSACS Meeting Hall. The meeting was led by AD (CST) Ms.
+            Meena Bhattarai and chaired by Dr. Deki Wangmu Phempu, Project Director, SSACS.-->
+            <!-- <span class="float-right">
+              <a href="#" class="text-red-600 rounded hover:bg-red-100 transition-colors duration-300 font-semibold">
+                Read More<span class="ml-1 text-lg">&raquo;</span>
+              </a>
+            </span> -->
+          <!--</p>
+        </div>
+      </div>-->
+    </div>
+
+  </div>
+</div>
